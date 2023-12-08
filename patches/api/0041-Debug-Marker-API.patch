@@ -5,10 +5,10 @@ Subject: [PATCH] Debug Marker API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 4d375b95459698284f1c27eefe8adc29fc0e7871..8ea42a1f07df756bf504609d2bbff578f20bb808 100644
+index 043de6315bbf62902a2c407b05caace2b37d4888..897cbab35a9082cca3faa076c5e2a57466e7147c 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -2870,5 +2870,89 @@ public final class Bukkit {
+@@ -2878,5 +2878,89 @@ public final class Bukkit {
      public static void removeFuel(@NotNull Material material) {
          server.removeFuel(material);
      }
@@ -99,10 +99,10 @@ index 4d375b95459698284f1c27eefe8adc29fc0e7871..8ea42a1f07df756bf504609d2bbff578
      // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 9217a021cd6e54fda334f637a0bfbbdbc7ad14b0..dd99f53e3d559685a4b3a454a9e607c310fc6aff 100644
+index a71a3a861574b4880eee35cace33422c27cfedf8..979f7e6ff87f9266be0606a9dc0ff7a50b896f0e 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2515,5 +2515,75 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2521,5 +2521,75 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       * @param material The material that will no longer be a fuel
       */
      public void removeFuel(@NotNull Material material);
@@ -179,10 +179,10 @@ index 9217a021cd6e54fda334f637a0bfbbdbc7ad14b0..dd99f53e3d559685a4b3a454a9e607c3
      // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 1e794f6d2765d3e2c40b15a9699d181ffe12c2f5..2f1adae519e45743828be06df15b5f33045ae18b 100644
+index 6fa89b11548da3d6be8cd92466f3853c1b409afc..cf63054e1b597b2bb13164722dd9a829ba7069ba 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -4219,6 +4219,76 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+@@ -4168,6 +4168,76 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
       * @return The local difficulty
       */
      public float getLocalDifficultyAt(@NotNull Location location);
@@ -260,10 +260,10 @@ index 1e794f6d2765d3e2c40b15a9699d181ffe12c2f5..2f1adae519e45743828be06df15b5f33
  
      /**
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index b66402df0d602ef33bf8742504f35c095041dfe3..2543299cbd94f409606dddb5969123909d11d1ac 100644
+index 0660f7d98f1d0cbd6442df8e01d6c72b5a395c15..8d5ff090957e924fa513928d39c5917f3c64eca5 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3398,5 +3398,75 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3335,5 +3335,75 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @deprecated Use {@link #resetIdleDuration()} instead
       */
      void resetIdleTimer();

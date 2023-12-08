@@ -1,0 +1,230 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: William Blake Galbreath <blake.galbreath@gmail.com>
+Date: Sat, 4 May 2019 01:02:11 -0500
+Subject: [PATCH] Rebrand
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 0cd12a854e544e867abfd94c18a9f138ba57e587..49e5c98b6e925e5f6fd23b2567e58282c542d307 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -13,12 +13,14 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
+ val alsoShade: Configuration by configurations.creating
+ 
+ dependencies {
++    // Purpur start
+     // Folia start
+-    implementation(project(":folia-api"))
++    implementation(project(":purpur-api"))
+     implementation("io.papermc.paper:paper-mojangapi:${project.version}") {
+         exclude("io.papermc.paper", "paper-api")
+     }
+     // Folia end
++    // Purpur end
+     // Paper start
+     implementation("org.jline:jline-terminal-jansi:3.21.0")
+     implementation("net.minecrell:terminalconsoleappender:1.3.0")
+@@ -55,6 +57,10 @@ dependencies {
+     runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3")
+     runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.7.3")
+ 
++    implementation("org.mozilla:rhino-runtime:1.7.14") // Purpur
++    implementation("org.mozilla:rhino-engine:1.7.14") // Purpur
++    implementation("dev.omega24:upnp4j:1.0") // Purpur
++
+     testImplementation("io.github.classgraph:classgraph:4.8.47") // Paper - mob goal test
+     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+     testImplementation("org.hamcrest:hamcrest:2.2")
+@@ -74,7 +80,7 @@ tasks.jar {
+         attributes(
+             "Main-Class" to "org.bukkit.craftbukkit.Main",
+             "Implementation-Title" to "CraftBukkit",
+-            "Implementation-Version" to "git-Folia-$implementationVersion", // Folia
++            "Implementation-Version" to "git-Purpur-$implementationVersion", // Folia // Purpur
+             "Implementation-Vendor" to date, // Paper
+             "Specification-Title" to "Bukkit",
+             "Specification-Version" to project.version,
+diff --git a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
+index c5d5648f4ca603ef2b1df723b58f9caf4dd3c722..3cb56595822799926a8141e60a42f5d1edfc6de5 100644
+--- a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
++++ b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
+@@ -17,7 +17,7 @@ public final class PaperConsole extends SimpleTerminalConsole {
+     @Override
+     protected LineReader buildReader(LineReaderBuilder builder) {
+         builder
+-                .appName("Paper")
++                .appName("Purpur") // Purpur
+                 .variable(LineReader.HISTORY_FILE, java.nio.file.Paths.get(".console_history"))
+                 .completer(new ConsoleCommandCompleter(this.server))
+                 .option(LineReader.Option.COMPLETE_IN_WORD, true);
+diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
+index 1d714d3eff11ed14f218656008190017494d4830..ed3527612315e6e0649182ce4e1ae2834b0918a9 100644
+--- a/src/main/java/net/minecraft/CrashReport.java
++++ b/src/main/java/net/minecraft/CrashReport.java
+@@ -123,6 +123,10 @@ public class CrashReport {
+         StringBuilder stringbuilder = new StringBuilder();
+ 
+         stringbuilder.append("---- Minecraft Crash Report ----\n");
++        // Purpur start
++        stringbuilder.append("// ");
++        stringbuilder.append("// DO NOT REPORT THIS TO PAPER! REPORT TO PURPUR INSTEAD!");
++        // Purpur end
+         stringbuilder.append("// ");
+         stringbuilder.append(CrashReport.getErrorComment());
+         stringbuilder.append("\n\n");
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 4b189b54c8f326939a7b9ffdfb35edfb7d8cee63..470a2957e098000ae22844307e87b0f3a914673a 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -982,7 +982,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         shutdownThread = Thread.currentThread();
+         org.spigotmc.WatchdogThread.doStop(); // Paper
+         if (false && !isSameThread()) { // Folia - region threading
+-            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO PAPER)");
++            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO PURPUR)"); // Purpur
+             while (this.getRunningThread().isAlive()) {
+                 this.getRunningThread().stop();
+                 try {
+@@ -1833,7 +1833,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+     @DontObfuscate
+     public String getServerModName() {
+-        return "Folia"; // Folia - Folia > // Paper - Paper > // Spigot - Spigot > // CraftBukkit - cb > vanilla!
++        return "Purpur"; // Purpur - Purpur > Folia - Folia // Folia - Folia > // Paper - Paper > // Spigot - Spigot > // CraftBukkit - cb > vanilla!
+     }
+ 
+     public SystemReport fillSystemReport(SystemReport details) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index bc778637c7d4371cafa9bcda67f8965f57cc66d6..e1db1a5c4024125cdf82b9613e5d96c57681bf0e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -269,7 +269,7 @@ import javax.annotation.Nullable; // Paper
+ import javax.annotation.Nonnull; // Paper
+ 
+ public final class CraftServer implements Server {
+-    private final String serverName = "Folia"; // Folia // Paper
++    private final String serverName = "Purpur"; // Purpur // Folia // Paper
+     private final String serverVersion;
+     private final String bukkitVersion = Versioning.getBukkitVersion();
+     private final Logger logger = Logger.getLogger("Minecraft");
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
+index 4e56018b64d11f76c8da43fd8f85c6de72204e36..9607675e6c5bff2183c4420d11fc63eeb5747fb6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
+@@ -21,7 +21,12 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
+ 
+     @Override
+     public void sendMessage(String message) {
+-        this.sendRawMessage(message);
++        // Purpur start
++        String[] parts = message.split("\n");
++        for (String part : parts) {
++        this.sendRawMessage(part);
++        }
++        // Purpur end
+     }
+ 
+     @Override
+@@ -91,7 +96,7 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
+     // Paper start
+     @Override
+     public void sendMessage(final net.kyori.adventure.identity.Identity identity, final net.kyori.adventure.text.Component message, final net.kyori.adventure.audience.MessageType type) {
+-        this.sendRawMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(message));
++        this.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(message)); // Purpur
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+index abc18d0e52d1e6ab4d04a9d8b97f91c9d6c4c02e..6794d9ed6e2911d87bffdc8e337af7b9e4a4d756 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+@@ -920,7 +920,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+             return EntityCategory.WATER;
+         }
+ 
+-        throw new UnsupportedOperationException("Unsupported monster type: " + type + ". This is a bug, report this to Spigot.");
++        throw new UnsupportedOperationException("Unsupported monster type: " + type + ". This is a bug, report this to Purpur."); // Purpur
+     }
+ 
+     @Override
+diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+index b23e43f7ac22bc106a0bcde4a8bca9ecba1a9ae4..875f5e547d1e548476c79f5d83e7d5c08db9df76 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
++++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+@@ -501,7 +501,7 @@ public class CraftScheduler implements BukkitScheduler {
+                 this.parsePending();
+             } else {
+                 // this.debugTail = this.debugTail.setNext(new CraftAsyncDebugger(currentTick + CraftScheduler.RECENT_TICKS, task.getOwner(), task.getTaskClass())); // Paper
+-                task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Paper"); // Paper
++                task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Purpur"); // Paper // Purpur
+                 // We don't need to parse pending
+                 // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
+             }
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index e9b6ca3aa25e140467ae866d572483050ea3fa0e..4f93394af56c5b9598224e495a0befd83b3e17f0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -11,7 +11,7 @@ public final class Versioning {
+     public static String getBukkitVersion() {
+         String result = "Unknown-Version";
+ 
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.folia/folia-api/pom.properties"); // Folia
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Folia // Purpur
+         Properties properties = new Properties();
+ 
+         if (stream != null) {
+diff --git a/src/main/java/org/spigotmc/WatchdogThread.java b/src/main/java/org/spigotmc/WatchdogThread.java
+index 40dcdf6885e99b26283a9ea2bd4d4bf6ec358e71..5fc8cc40ab627eba0b2110c73d31af213a935733 100644
+--- a/src/main/java/org/spigotmc/WatchdogThread.java
++++ b/src/main/java/org/spigotmc/WatchdogThread.java
+@@ -96,7 +96,7 @@ public final class WatchdogThread extends io.papermc.paper.util.TickThread // Pa
+ 
+     private WatchdogThread(long timeoutTime, boolean restart)
+     {
+-        super( "Paper Watchdog Thread" );
++        super( "Watchdog Thread" ); // Purpur - use a generic name
+         this.timeoutTime = timeoutTime;
+         this.restart = restart;
+         earlyWarningEvery = Math.min(io.papermc.paper.configuration.GlobalConfiguration.get().watchdog.earlyWarningEvery, timeoutTime); // Paper
+@@ -155,14 +155,14 @@ public final class WatchdogThread extends io.papermc.paper.util.TickThread // Pa
+                 if (isLongTimeout) {
+                 // Paper end
+                 log.log( Level.SEVERE, "------------------------------" );
+-                log.log( Level.SEVERE, "The server has stopped responding! This is (probably) not a Paper bug." ); // Paper
++                log.log( Level.SEVERE, "The server has stopped responding! This is (probably) not a Purpur bug." ); // Paper // Purpur
+                 log.log( Level.SEVERE, "If you see a plugin in the Server thread dump below, then please report it to that author" );
+                 log.log( Level.SEVERE, "\t *Especially* if it looks like HTTP or MySQL operations are occurring" );
+                 log.log( Level.SEVERE, "If you see a world save or edit, then it means you did far more than your server can handle at once" );
+                 log.log( Level.SEVERE, "\t If this is the case, consider increasing timeout-time in spigot.yml but note that this will replace the crash with LARGE lag spikes" );
+-                log.log( Level.SEVERE, "If you are unsure or still think this is a Paper bug, please report this to https://github.com/PaperMC/Paper/issues" );
++                log.log( Level.SEVERE, "If you are unsure or still think this is a Purpur bug, please report this to https://github.com/PurpurMC/Purpur/issues" ); // Purpur
+                 log.log( Level.SEVERE, "Be sure to include ALL relevant console errors and Minecraft crash reports" );
+-                log.log( Level.SEVERE, "Paper version: " + Bukkit.getServer().getVersion() );
++                log.log( Level.SEVERE, "Purpur version: " + Bukkit.getServer().getVersion() ); // Purpur
+                 //
+                 if ( net.minecraft.world.level.Level.lastPhysicsProblem != null )
+                 {
+@@ -185,12 +185,12 @@ public final class WatchdogThread extends io.papermc.paper.util.TickThread // Pa
+                 // Paper end
+                 } else
+                 {
+-                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PAPER - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---");
++                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PURPUR - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---"); // Purpur
+                     log.log(Level.SEVERE, "The server has not responded for " + (currentTime - lastTick) / 1000 + " seconds! Creating thread dump");
+                 }
+                 // Paper end - Different message for short timeout
+                 log.log( Level.SEVERE, "------------------------------" );
+-                log.log( Level.SEVERE, "Server thread dump (Look for plugins here before reporting to Paper!):" ); // Paper
++                log.log( Level.SEVERE, "Server thread dump (Look for plugins here before reporting to Purpur!):" ); // Paper // Purpur
+                 io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.dumpAllChunkLoadInfo(isLongTimeout); // Paper // Paper - rewrite chunk system
+                 this.dumpTickingInfo(); // Paper - log detailed tick information
+                 WatchdogThread.dumpThread( ManagementFactory.getThreadMXBean().getThreadInfo( MinecraftServer.getServer().serverThread.getId(), Integer.MAX_VALUE ), log );
+@@ -206,7 +206,7 @@ public final class WatchdogThread extends io.papermc.paper.util.TickThread // Pa
+                     WatchdogThread.dumpThread( thread, log );
+                 }
+                 } else {
+-                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PAPER - THIS IS NOT A BUG OR A CRASH ---");
++                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PURPUR - THIS IS NOT A BUG OR A CRASH ---"); // Purpur
+                 }
+ 
+                 log.log( Level.SEVERE, "------------------------------" );

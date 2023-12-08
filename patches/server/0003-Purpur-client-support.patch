@@ -5,7 +5,7 @@ Subject: [PATCH] Purpur client support
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 08980763020a13ab49dc7d637625a4fba56da8c9..c4cef829be6333143ed4af4025ade34a307926f6 100644
+index 97bfb92e52c3c5ef1cd22afe2b97c204eb45025a..a0415b972dff791e5f6afaaa33ee40b928a062b5 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -274,6 +274,7 @@ public class ServerPlayer extends Player {
@@ -17,7 +17,7 @@ index 08980763020a13ab49dc7d637625a4fba56da8c9..c4cef829be6333143ed4af4025ade34a
      // Paper start - replace player chunk loader
      private final java.util.concurrent.atomic.AtomicReference<io.papermc.paper.chunk.system.RegionizedPlayerChunkLoader.ViewDistances> viewDistances = new java.util.concurrent.atomic.AtomicReference<>(new io.papermc.paper.chunk.system.RegionizedPlayerChunkLoader.ViewDistances(-1, -1, -1));
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 598f807f0d0caac98b81e0e2991f1bd497c4534e..e9824deab810738e0df8b8e6932048b601ba6662 100644
+index 2bb944cef9bc8c5e56023ef20921ef13509d4823..1ecf1490718244cfcdc64d54aa0cee6b044e9a55 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -55,6 +55,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -28,7 +28,7 @@ index 598f807f0d0caac98b81e0e2991f1bd497c4534e..e9824deab810738e0df8b8e6932048b6
  
      public ServerCommonPacketListenerImpl(MinecraftServer minecraftserver, Connection networkmanager, CommonListenerCookie commonlistenercookie, ServerPlayer player) { // CraftBukkit
          this.server = minecraftserver;
-@@ -137,6 +138,13 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -138,6 +139,13 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  ServerGamePacketListenerImpl.LOGGER.error("Couldn\'t register custom payload", ex);
                  this.disconnect("Invalid payload REGISTER!", org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
              }
@@ -43,10 +43,10 @@ index 598f807f0d0caac98b81e0e2991f1bd497c4534e..e9824deab810738e0df8b8e6932048b6
              try {
                  String channels = payload.toString(com.google.common.base.Charsets.UTF_8);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 3a792ddc31e76038b84e8f87088c4cd94c349138..df5b588309f181c84336060d3668880b74ea7490 100644
+index 6c8f6e26687b557fcdcd65c657d8b35d3fde805e..031ccd7a7e48e8c6966693c59617c55192c9f752 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3303,4 +3303,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3299,4 +3299,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.spigot;
      }
      // Spigot end

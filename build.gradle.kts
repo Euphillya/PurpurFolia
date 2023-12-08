@@ -1,5 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import io.papermc.paperweight.util.*
+import io.papermc.paperweight.util.constants.*
 
 plugins {
     java
@@ -10,7 +12,6 @@ plugins {
 
 allprojects {
     apply(plugin = "java")
-    apply(plugin = "maven-publish")
 
     java {
         toolchain {
@@ -68,8 +69,13 @@ paperweight {
     remapRepo.set(paperMavenPublicUrl)
     decompileRepo.set(paperMavenPublicUrl)
 
-    usePaperUpstream(providers.gradleProperty("paperCommit")) {
-        withPaperPatcher {
+    useStandardUpstream("Folia") {
+        url.set(github("PaperMC", "Folia"))
+        ref.set(providers.gradleProperty("foliaRef"))
+
+        withStandardPatcher {
+            baseName("Folia")
+
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
             apiOutputDir.set(layout.projectDirectory.dir("Purpur-API"))
 
@@ -79,36 +85,6 @@ paperweight {
     }
 }
 
-tasks.generateDevelopmentBundle {
-    apiCoordinates.set("org.purpurmc.purpur:purpur-api")
-    mojangApiCoordinates.set("io.papermc.paper:paper-mojangapi")
-    libraryRepositories.set(
-        listOf(
-            "https://repo.maven.apache.org/maven2/",
-            paperMavenPublicUrl,
-            "https://repo.purpurmc.org/snapshots",
-        )
-    )
-}
-
-allprojects {
-    publishing {
-        repositories {
-            maven("https://repo.purpurmc.org/snapshots") {
-                name = "purpur"
-                credentials(PasswordCredentials::class)
-            }
-        }
-    }
-}
-
-publishing {
-    publications.create<MavenPublication>("devBundle") {
-        artifact(tasks.generateDevelopmentBundle) {
-            artifactId = "dev-bundle"
-        }
-    }
-}
 
 tasks.register("printMinecraftVersion") {
     doLast {
@@ -119,5 +95,36 @@ tasks.register("printMinecraftVersion") {
 tasks.register("printPurpurVersion") {
     doLast {
         println(project.version)
+    }
+}
+
+tasks.register("foliaRefLatest") {
+    // Update the foliaRef in gradle.properties to be the latest commit.
+    val tempDir = layout.cacheDir("foliaRefLatest");
+    val file = "gradle.properties";
+
+    doFirst {
+        data class GithubCommit(
+            val sha: String
+        )
+
+        val foliaLatestCommitJson = layout.cache.resolve("foliaLatestCommit.json");
+        download.get().download("https://api.github.com/repos/PaperMC/Folia/commits/master", foliaLatestCommitJson);
+        val foliaLatestCommit = gson.fromJson<paper.libs.com.google.gson.JsonObject>(foliaLatestCommitJson)["sha"].asString;
+
+        copy {
+            from(file)
+            into(tempDir)
+            filter { line: String ->
+                line.replace("foliaRef = .*".toRegex(), "foliaRef = $foliaLatestCommit")
+            }
+        }
+    }
+
+    doLast {
+        copy {
+            from(tempDir.file("gradle.properties"))
+            into(project.file(file).parent)
+        }
     }
 }

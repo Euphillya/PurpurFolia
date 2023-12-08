@@ -5,10 +5,10 @@ Subject: [PATCH] Barrels and enderchests 6 rows
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index cd6bfaa8dc06c05ab25cbded645a1dbca725838c..837ef9a66921f881c5c94aa5f28746d9494d4a98 100644
+index 6c520ac4a78ded82b29771f75f090c4e3824bc8e..99874f2ac53226836346b735d77d6a774dec5d75 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -1185,6 +1185,27 @@ public abstract class PlayerList {
+@@ -1279,6 +1279,27 @@ public abstract class PlayerList {
          player.getBukkitEntity().recalculatePermissions(); // CraftBukkit
          this.server.getCommands().sendCommands(player);
          } // Paper
@@ -37,7 +37,7 @@ index cd6bfaa8dc06c05ab25cbded645a1dbca725838c..837ef9a66921f881c5c94aa5f28746d9
  
      public boolean isWhiteListed(GameProfile profile) {
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 911a44ab096bf835709632921797a749ee0bc638..3b4d9069ce877eba1adc330154eec5c178d82256 100644
+index 51c31ac3d54996a6e2d870d8215546fdcf5ee506..164cb9f32b6e48c10acc474f64726ee46af2b9c0 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -188,6 +188,7 @@ public abstract class Player extends LivingEntity {
@@ -243,12 +243,12 @@ index 471ae4458e7ea7c29d7551b32cec98180fbccd4e..23db63c78e9fcf86cd498b3ed36ca502
          for (int i = 0; i < this.getSize(); i++) {
              if (i >= items.length) {
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 8ad548fc059568d37675e017548b171d4dd1d555..7937023274acf3a1efdd21bbdd2f933f4399baeb 100644
+index 61d193d8ddd87817bf2c560037d42366cff1eca9..d109d5dd38063a8188c4bb19a65a4c749118577b 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -177,4 +177,39 @@ public class PurpurConfig {
-     private static void messages() {
-         cannotRideMob = getString("settings.messages.cannot-ride-mob", cannotRideMob);
+@@ -172,4 +172,39 @@ public class PurpurConfig {
+         }
+         return builder.build();
      }
 +
 +    public static int barrelRows = 3;
