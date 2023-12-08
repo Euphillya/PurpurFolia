@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: William Blake Galbreath <blake.galbreath@gmail.com>
-Date: Thu, 8 Aug 2019 15:29:15 -0500
+From: Bierque Jason <bierquejason@gmail.com>
+Date: Fri, 8 Dec 2023 05:54:46 +0100
 Subject: [PATCH] AFK API
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 1b715858cd62511dfe47f8e9157bde331aa6f6f7..f8248a955c45a5f0f9bd5ac46aa2e1ae8703f79b 100644
+index 680cc6e0d0f37ef058ebf8e26485e7c0d3430e49..52678ab7bb47be7c5bfcba3077eca20e91f23163 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -2134,8 +2134,68 @@ public class ServerPlayer extends Player {
+@@ -2561,8 +2561,68 @@ public class ServerPlayer extends Player {
  
      public void resetLastActionTime() {
          this.lastActionTime = Util.getMillis();
@@ -78,14 +78,14 @@ index 1b715858cd62511dfe47f8e9157bde331aa6f6f7..f8248a955c45a5f0f9bd5ac46aa2e1ae
          return this.stats;
      }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 925ecb3d737f2e0e58bfdf17e2e48334188dce28..3fa2997cefdff8957dd71aa87b4c2ee924b7e80a 100644
+index 159d3a27c1686fd2b0025cab5b7e7775679c4ce9..f0f3485aa36b81e75d732865f6900e621dc66a0a 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -323,6 +323,20 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
      private boolean hasMoved; // Spigot
      // CraftBukkit end
  
-+        // Purpur start
++    // Purpur start
 +    private final com.google.common.cache.LoadingCache<CraftPlayer, Boolean> kickPermissionCache = com.google.common.cache.CacheBuilder.newBuilder()
 +        .maximumSize(1000)
 +        .expireAfterWrite(1, java.util.concurrent.TimeUnit.MINUTES)
@@ -99,10 +99,10 @@ index 925ecb3d737f2e0e58bfdf17e2e48334188dce28..3fa2997cefdff8957dd71aa87b4c2ee9
 +        );
 +    // Purpur end
 +
-     @Override
-     public void tick() {
-         if (this.ackBlockChangesUpTo > -1) {
-@@ -390,6 +404,12 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+     // Folia start - region threading
+     public net.minecraft.world.level.ChunkPos disconnectPos;
+     private static final java.util.concurrent.atomic.AtomicLong DISCONNECT_TICKET_ID_GENERATOR = new java.util.concurrent.atomic.AtomicLong();
+@@ -403,6 +417,12 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
          }
  
          if (this.player.getLastActionTime() > 0L && this.server.getPlayerIdleTimeout() > 0 && Util.getMillis() - this.player.getLastActionTime() > (long) this.server.getPlayerIdleTimeout() * 1000L * 60L && !this.player.wonGame) { // Paper - Prevent AFK kick while watching end credits.
@@ -115,7 +115,7 @@ index 925ecb3d737f2e0e58bfdf17e2e48334188dce28..3fa2997cefdff8957dd71aa87b4c2ee9
              this.player.resetLastActionTime(); // CraftBukkit - SPIGOT-854
              this.disconnect(Component.translatable("multiplayer.disconnect.idling"), org.bukkit.event.player.PlayerKickEvent.Cause.IDLING); // Paper - kick event cause
          }
-@@ -638,6 +658,8 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -673,6 +693,8 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
                      this.lastYaw = to.getYaw();
                      this.lastPitch = to.getPitch();
  
@@ -124,7 +124,7 @@ index 925ecb3d737f2e0e58bfdf17e2e48334188dce28..3fa2997cefdff8957dd71aa87b4c2ee9
                      // Skip the first time we do this
                      if (true) { // Spigot - don't skip any move events
                          Location oldTo = to.clone();
-@@ -1468,7 +1490,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -1515,7 +1537,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
                                  if (!event.isAllowed()) {
                                  flag2 = true; // Paper - diff on change, this should be moved wrongly
                                      if (event.getLogWarning())
@@ -133,7 +133,7 @@ index 925ecb3d737f2e0e58bfdf17e2e48334188dce28..3fa2997cefdff8957dd71aa87b4c2ee9
                                  }
                                  // Paper end
                              }
-@@ -1530,6 +1552,8 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -1577,6 +1599,8 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
                                      this.lastYaw = to.getYaw();
                                      this.lastPitch = to.getPitch();
  
@@ -165,19 +165,19 @@ index 823efad652d8ff9e96b99375b102fef6f017716e..caa8a69bde0c212c36dd990a67836ac2
                  }
                  // CraftBukkit start
 diff --git a/src/main/java/net/minecraft/world/entity/EntitySelector.java b/src/main/java/net/minecraft/world/entity/EntitySelector.java
-index 3ff999734d14e2b6e7828e117f5ee32a60c26bc1..cfa9607241c3e69777ffc317206996c2f783437a 100644
+index 3ff999734d14e2b6e7828e117f5ee32a60c26bc1..a859ac8f93ab637ca2815ef4b8283588c93e66e2 100644
 --- a/src/main/java/net/minecraft/world/entity/EntitySelector.java
 +++ b/src/main/java/net/minecraft/world/entity/EntitySelector.java
-@@ -39,6 +39,7 @@ public final class EntitySelector {
-         return net.minecraft.util.Mth.clamp(serverPlayer.getStats().getValue(net.minecraft.stats.Stats.CUSTOM.get(net.minecraft.stats.Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE) >= playerInsomniaTicks;
-     };
-     // Paper end
-+    public static Predicate<Player> notAfk = (player) -> !player.isAfk(); // Purpur
+@@ -42,6 +42,7 @@ public final class EntitySelector {
  
      private EntitySelector() {}
      // Paper start
++    public static Predicate<Player> notAfk = (player) -> !player.isAfk(); // Purpur
+     public static final Predicate<Entity> PLAYER_AFFECTS_SPAWNING = (entity) -> {
+         return !entity.isSpectator() && entity.isAlive() && entity instanceof Player player && player.affectsSpawning;
+     };
 diff --git a/src/main/java/net/minecraft/world/entity/ai/targeting/TargetingConditions.java b/src/main/java/net/minecraft/world/entity/ai/targeting/TargetingConditions.java
-index ac5e5676b194a2a99e5cf53eb89c1152cac963b8..872454743f6dedc27519a13566559195c47cc9f8 100644
+index c157309ac78e7af084d3acb6e8b2bcd469a39d5e..631b6f26c96e7de65c8ab5377f1b82c7f56df96c 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/targeting/TargetingConditions.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/targeting/TargetingConditions.java
 @@ -64,6 +64,10 @@ public class TargetingConditions {
@@ -192,38 +192,40 @@ index ac5e5676b194a2a99e5cf53eb89c1152cac963b8..872454743f6dedc27519a13566559195
              if (baseEntity == null) {
                  if (this.isCombat && (!targetEntity.canBeSeenAsEnemy() || targetEntity.level().getDifficulty() == Difficulty.PEACEFUL)) {
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 3b4d9069ce877eba1adc330154eec5c178d82256..524689a3e487e303d04e32ac43487fb96c43ca7b 100644
+index 164cb9f32b6e48c10acc474f64726ee46af2b9c0..d11c969d790485425cb6653336ebcfbd172febb1 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -194,6 +194,13 @@ public abstract class Player extends LivingEntity {
+@@ -194,6 +194,15 @@ public abstract class Player extends LivingEntity {
      public boolean fauxSleeping;
      public int oldLevel = -1;
  
++    // Purpur start
 +    public void setAfk(boolean afk) {
 +    }
 +
 +    public boolean isAfk() {
 +        return false;
 +    }
++    // Purpur end
 +
      @Override
      public CraftHumanEntity getBukkitEntity() {
          return (CraftHumanEntity) super.getBukkitEntity();
 diff --git a/src/main/java/net/minecraft/world/level/EntityGetter.java b/src/main/java/net/minecraft/world/level/EntityGetter.java
-index aaa07fcd4b32fe0de88142ab30378327a01f1729..bc8555d21d418f9da37cc089904f7cb038b1cdbe 100644
+index 08884cc7d787887b470e90897838969d50dc4ad9..ba4dccbe45274d5630c83c771fe2746de29c508c 100644
 --- a/src/main/java/net/minecraft/world/level/EntityGetter.java
 +++ b/src/main/java/net/minecraft/world/level/EntityGetter.java
-@@ -191,7 +191,7 @@ public interface EntityGetter {
+@@ -197,7 +197,7 @@ public interface EntityGetter {
  
      default boolean hasNearbyAlivePlayer(double x, double y, double z, double range) {
-         for(Player player : this.players()) {
+         for(Player player : this.getLocalPlayers()) { // Folia - region threading
 -            if (EntitySelector.NO_SPECTATORS.test(player) && EntitySelector.LIVING_ENTITY_STILL_ALIVE.test(player)) {
 +            if (EntitySelector.NO_SPECTATORS.test(player) && EntitySelector.LIVING_ENTITY_STILL_ALIVE.test(player) && EntitySelector.notAfk.test(player)) {
                  double d = player.distanceToSqr(x, y, z);
                  if (range < 0.0D || d < range * range) {
                      return true;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index df5b588309f181c84336060d3668880b74ea7490..e1efdda967847af492f069861ef19dd307bc76a1 100644
+index 031ccd7a7e48e8c6966693c59617c55192c9f752..f3a38df5cca5b934c293d0e7b18a6696243010c5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -519,10 +519,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -243,7 +245,7 @@ index df5b588309f181c84336060d3668880b74ea7490..e1efdda967847af492f069861ef19dd3
          for (ServerPlayer player : (List<ServerPlayer>) this.server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
                  player.connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, this.getHandle()));
-@@ -3309,5 +3314,20 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3305,5 +3310,20 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public boolean usesPurpurClient() {
          return getHandle().purpurClient;
      }
@@ -265,30 +267,31 @@ index df5b588309f181c84336060d3668880b74ea7490..e1efdda967847af492f069861ef19dd3
      // Purpur end
  }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 7937023274acf3a1efdd21bbdd2f933f4399baeb..3fba9f640ef03219c89a2a405e4d5a5870e366bf 100644
+index d109d5dd38063a8188c4bb19a65a4c749118577b..eed2da59f12a8f82610cf6124fbc99da39d32117 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -174,8 +174,18 @@ public class PurpurConfig {
+@@ -173,6 +173,19 @@ public class PurpurConfig {
+         return builder.build();
      }
  
-     public static String cannotRideMob = "<red>You cannot mount that mob";
 +    public static String afkBroadcastAway = "<yellow><italic>%s is now AFK";
 +    public static String afkBroadcastBack = "<yellow><italic>%s is no longer AFK";
 +    public static boolean afkBroadcastUseDisplayName = false;
 +    public static String afkTabListPrefix = "[AFK] ";
 +    public static String afkTabListSuffix = "";
-     private static void messages() {
-         cannotRideMob = getString("settings.messages.cannot-ride-mob", cannotRideMob);
++    private static void messages() {
 +        afkBroadcastAway = getString("settings.messages.afk-broadcast-away", afkBroadcastAway);
 +        afkBroadcastBack = getString("settings.messages.afk-broadcast-back", afkBroadcastBack);
 +        afkBroadcastUseDisplayName = getBoolean("settings.messages.afk-broadcast-use-display-name", afkBroadcastUseDisplayName);
 +        afkTabListPrefix = MiniMessage.miniMessage().serialize(MiniMessage.miniMessage().deserialize(getString("settings.messages.afk-tab-list-prefix", afkTabListPrefix)));
 +        afkTabListSuffix = MiniMessage.miniMessage().serialize(MiniMessage.miniMessage().deserialize(getString("settings.messages.afk-tab-list-suffix", afkTabListSuffix)));
-     }
- 
++    }
++
      public static int barrelRows = 3;
+     public static boolean enderChestSixRows = false;
+     public static boolean enderChestPermissionRows = false;
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index e248395ad5f5f012aeefecf367d54f90cade0996..70f53ccb22de2c05c9ead68f8bd29d0b69d0993f 100644
+index 3ad42542c1ca88a541221e7e7b1a5ab965b1ec48..6966970ff2e5a2acd10b49060dfccbc1b56c9b3a 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -90,6 +90,24 @@ public class PurpurWorldConfig {
@@ -313,14 +316,14 @@ index e248395ad5f5f012aeefecf367d54f90cade0996..70f53ccb22de2c05c9ead68f8bd29d0b
 +        idleTimeoutTargetPlayer = getBoolean("gameplay-mechanics.player.idle-timeout.mobs-target", idleTimeoutTargetPlayer);
 +    }
 +
-     public boolean babiesAreRidable = true;
-     public boolean untamedTamablesAreRidable = true;
-     public boolean useNightVisionWhenRiding = false;
+     public double axolotlMaxHealth = 14.0D;
+     private void axolotlSettings() {
+         axolotlMaxHealth = getDouble("mobs.axolotl.attributes.max_health", axolotlMaxHealth);
 diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
-index c0333ba8e57cd284bb8ab15181da6b39d55872f9..282a57df4e2e5708e9cfd9c76b1d7de2a8a23900 100644
+index d88988200016c1a3cc76c017dfb7deabf6fc17af..b677aa61c13bbc16813067f9ff5ac1f8c0385232 100644
 --- a/src/main/java/org/spigotmc/ActivationRange.java
 +++ b/src/main/java/org/spigotmc/ActivationRange.java
-@@ -203,6 +203,7 @@ public class ActivationRange
+@@ -201,6 +201,7 @@ public class ActivationRange
                  continue;
              }
  

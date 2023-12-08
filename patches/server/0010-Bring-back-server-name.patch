@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: William Blake Galbreath <blake.galbreath@gmail.com>
-Date: Sun, 26 May 2019 15:19:14 -0500
+From: Bierque Jason <bierquejason@gmail.com>
+Date: Fri, 8 Dec 2023 05:58:08 +0100
 Subject: [PATCH] Bring back server name
 
 
@@ -17,14 +17,13 @@ index c5598adb8cbcbcf7277c2fd4dd72c243d44d9700..cda4544ae96a4fcb5c6c4483df67a59f
      public final boolean spawnNpcs = this.get("spawn-npcs", true);
      public final boolean pvp = this.get("pvp", true);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 8378cb22269e4020f06be4cfc0e1dba32c683431..c2b8f90a50438a7cde9aaa7e723eaab8b7d0c8c9 100644
+index e004046e8f911499c4a5245505777bb5e3593b8a..ed3e88eea668d79c57619bfbc9aa7bd6bb483c01 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -3216,4 +3216,11 @@ public final class CraftServer implements Server {
+@@ -3254,4 +3254,10 @@ public final class CraftServer implements Server {
      }
  
      // Paper end
-+
 +    // Purpur start
 +    @Override
 +    public String getServerName() {
